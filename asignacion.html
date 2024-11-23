@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCEI - Reasignación</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        .header {
+            background-color: #3498db;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .header .role {
+            font-size: 18px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-volver {
+            display: inline-block;
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-volver:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-editar, .btn-guardar {
+            background-color: #3498db;
+            color: #fff;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-editar:hover, .btn-guardar:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-guardar {
+            display: none; /* Oculto inicialmente */
+        }
+
+        input[type="text"] {
+            padding: 5px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        input[type="text"]:disabled {
+            background-color: #f9f9f9;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SCEI</h1>
+        <div class="role">Administrador</div>
+    </div>
+
+    <div class="container">
+        <a href="login.html" class="btn-volver">Volver al Menú</a>
+        <h1>Reasignación de Equipos</h1>
+        <table id="reasignacion-table">
+            <thead>
+                <tr>
+                    <th>Ubicación</th>
+                    <th>Estado</th>
+                    <th>Usuario Asignado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Las filas se agregarán dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        // Cargar datos desde LocalStorage al iniciar la página
+        document.addEventListener("DOMContentLoaded", cargarReasignaciones);
+
+        // Función para cargar reasignaciones desde LocalStorage
+        function cargarReasignaciones() {
+            // Obtener reasignaciones de LocalStorage, si no existen, crear desde inventario
+            let reasignaciones = JSON.parse(localStorage.getItem('reasignaciones')) || [];
+            
+            // Si no hay reasignaciones, crear desde inventario
+            if (reasignaciones.length === 0) {
+                const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+                reasignaciones = inventory.map(item => ({
+                    ubicacion: item.location,
+                    estado: item.status,
+                    usuarioAsignado: ""  // Cambié el valor por una cadena vacía
+                }));
+                localStorage.setItem('reasignaciones', JSON.stringify(reasignaciones));
+            }
+
+            const tbody = document.querySelector('#reasignacion-table tbody');
+            tbody.innerHTML = ''; // Limpiar tbody antes de agregar filas
+
+            // Crear filas dinámicamente
+            reasignaciones.forEach(reasignacion => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${reasignacion.ubicacion}</td>
+                    <td>${reasignacion.estado}</td>
+                    <td>${reasignacion.usuarioAsignado}</td>
+                    <td>
+                        <button class="btn-editar" onclick="editarFila(this)">Editar</button>
+                        <button class="btn-guardar" onclick="guardarFila(this)">Guardar</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Función para guardar reasignaciones en LocalStorage
+        function guardarReasignaciones() {
+            const rows = document.querySelectorAll('#reasignacion-table tbody tr');
+            const reasignaciones = [];
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                reasignaciones.push({
+                    ubicacion: cells[0].textContent,
+                    estado: cells[1].textContent,
+                    usuarioAsignado: cells[2].textContent
+                });
+            });
+
+            localStorage.setItem('reasignaciones', JSON.stringify(reasignaciones));
+        }
+
+        function editarFila(btn) {
+            const row = btn.parentElement.parentElement;
+            const cells = row.querySelectorAll('td');
+            const usuarioAsignado = cells[2];
+            const btnGuardar = row.querySelector('.btn-guardar');
+
+            usuarioAsignado.innerHTML = `<input type="text" value="${usuarioAsignado.textContent}">`;
+            const input = usuarioAsignado.querySelector('input');
+            input.focus();
+            btn.style.display = 'none';
+            btnGuardar.style.display = 'inline-block';
+        }
+
+        function guardarFila(btn) {
+            const row = btn.parentElement.parentElement;
+            const cells = row.querySelectorAll('td');
+            const usuarioAsignado = cells[2];
+            const btnEditar = row.querySelector('.btn-editar');
+
+            const input = usuarioAsignado.querySelector('input');
+            usuarioAsignado.textContent = input.value;
+            btn.style.display = 'none';
+            btnEditar.style.display = 'inline-block';
+
+            // Guardar los cambios en localStorage
+            guardarReasignaciones();
+        }
+    </script>
+</body>
+</html>

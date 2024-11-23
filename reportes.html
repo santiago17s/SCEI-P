@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCEI - Dashboard de Reportes</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background-color: #3498db;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            margin: 0 auto;
+            text-align: center;
+            width: 100%;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .dashboard-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: scale(1.03);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            color: #3498db;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .stat-item {
+            background-color: #f1f4f8;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin: 0 10px;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SCEI - Dashboard de Reportes</h1>
+    </div>
+
+    <div class="container">
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>Inventario de Equipos</h3>
+                    <span class="card-icon">💻</span>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <strong>Total Equipos</strong>
+                        <p id="total-equipos">-</p>
+                    </div>
+                    <div class="stat-item">
+                        <strong>Equipos Disponibles</strong>
+                        <p id="equipos-disponibles">-</p>
+                    </div>
+                    <div class="stat-item">
+                        <strong>En Mantenimiento</strong>
+                        <p id="equipos-mantenimiento">-</p>
+                    </div>
+                    <div class="stat-item">
+                        <strong>Asignados</strong>
+                        <p id="equipos-asignados">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>Mantenimiento</h3>
+                    <span class="card-icon">🔧</span>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <strong>Próximo Mantenimiento</strong>
+                        <p>15 Diciembre</p>
+                    </div>
+                    <div class="stat-item">
+                        <strong>Equipos Revisados</strong>
+                        <p id="equipos-revisados">-</p> <!-- Aquí se actualiza dinámicamente -->
+                    </div>
+                    <div class="stat-item">
+                        <strong>Reparaciones</strong>
+                        <p>1</p>
+                    </div>
+                    <div class="stat-item">
+                        <strong>Costo Mantenimiento</strong>
+                        <p>$1.750.000 COP</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>Alertas de Sistema</h3>
+                    <span class="card-icon">⚠️</span>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <strong>Equipos Obsoletos</strong>
+                        <p>0</p>
+                    </div>
+                    <div class="stat-item">
+                        <strong>Garantías por Vencer</strong>
+                        <p>5</p>
+                    </div>
+                    <div class="stat-item">
+                        <strong>Actualizaciones</strong>
+                        <p>Pendientes</p>
+                    </div>
+                    <div class="stat-item">
+                        <strong>Última Actualización</strong>
+                        <p>Hoy</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn" onclick="window.location.href='login.html'">Ir a Menu</button>
+            <button class="btn" onclick="window.print()">Imprimir Reporte</button>
+        </div>
+    </div>
+
+    <script>
+        // Función para cargar datos del inventario desde LocalStorage
+        function cargarDatosInventario() {
+            // Obtener el inventario desde LocalStorage
+            const inventario = JSON.parse(localStorage.getItem('inventory')) || [];
+            
+            // Total de equipos
+            const totalEquipos = inventario.length;
+            document.getElementById('total-equipos').textContent = totalEquipos;
+            
+            // Equipos Disponibles
+            const equiposDisponibles = inventario.filter(item => 
+                item.status.trim().toLowerCase() === 'disponible'
+            ).length;
+            document.getElementById('equipos-disponibles').textContent = equiposDisponibles;
+            
+            // Equipos en Mantenimiento
+            const equiposMantenimiento = inventario.filter(item => 
+                item.status.trim().toLowerCase() === 'mantenimiento'
+            ).length;
+            document.getElementById('equipos-mantenimiento').textContent = equiposMantenimiento;
+            
+            // Equipos Asignados (Ocupados)
+            const equiposAsignados = inventario.filter(item => 
+                item.status.trim().toLowerCase() === 'ocupado'
+            ).length;
+            document.getElementById('equipos-asignados').textContent = equiposAsignados;
+
+            // Equipos Revisados (total equipos)
+            document.getElementById('equipos-revisados').textContent = totalEquipos;  // Igual al total de equipos
+        }
+
+        // Cargar datos al iniciar la página
+        document.addEventListener('DOMContentLoaded', cargarDatosInventario);
+    </script>
+</body>
+</html>

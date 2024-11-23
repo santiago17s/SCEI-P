@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCEI - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header con logo y usuario */
+        .header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .logo-container {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            letter-spacing: -2px;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .user-icon {
+            width: 35px;
+            height: 35px;
+            background: #e0e0e0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .user-text {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        /* Botones de navegación */
+        .nav-buttons-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .nav-link {
+            padding: 15px 30px;
+            background: white;
+            border: none;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            color: white;
+        }
+
+        /* Mensaje de bienvenida */
+        .welcome-message {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 0 auto;
+            max-width: 800px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .welcome-message h1 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .welcome-message p {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Iconos para los botones */
+        .nav-icon {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo-container">
+                <div class="logo">SCEI</div>
+            </div>
+            <div class="user-section">
+                <span class="user-text">ADMINISTRADOR</span>
+                <div class="user-icon">👤</div>
+            </div>
+        </header>
+
+        <main>
+            <div class="nav-buttons-container">
+                <a href="inventario.html" class="nav-link">
+                    <span class="nav-icon">📦</span>
+                    Gestión de inventario
+                </a>
+                <a href="asignacion.html" class="nav-link">
+                    <span class="nav-icon">💻</span>
+                    Asignación de Equipos
+                </a>
+                <a href="reportes.html" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    Reportes
+                </a>
+            </div>
+
+            <div class="welcome-message">
+                <h1>Bienvenido al sistema de control de equipos informáticos</h1>
+                <p>Gestiona y controla el inventario de equipos informáticos de manera eficiente.</p>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

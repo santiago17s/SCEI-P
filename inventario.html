@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCEI - Gestión de Inventario</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+        }
+
+        .user-icon {
+            width: 30px;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #f0f0f0;
+            color: #2c3e50;
+        }
+
+        td {
+            background: #fff;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .button {
+            padding: 10px 20px;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .button:hover {
+            background: #2979a3;
+        }
+
+        .delete-button {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .delete-button:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">SCEI</div>
+            <div class="user-section">
+                <span>ADMINISTRADOR</span>
+                <div class="user-icon">👤</div>
+            </div>
+        </header>
+
+        <table id="inventory-table">
+            <thead>
+                <tr>
+                    <th>Ubicación</th>
+                    <th>Estado</th>
+                    <th>Tipo de Equipo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Las filas se agregarán dinámicamente con JavaScript -->
+            </tbody>
+        </table>
+
+        <div class="button-container">
+            <button class="button" onclick="addRow()">Agregar</button>
+            <button class="button" onclick="goToMenu()">Menú</button>
+        </div>
+    </div>
+
+    <script>
+        // Cargar datos desde LocalStorage al iniciar la página
+        document.addEventListener("DOMContentLoaded", loadInventory);
+
+        // Función para cargar inventario desde LocalStorage
+        function loadInventory() {
+            const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            const tableBody = document.querySelector('#inventory-table tbody');
+            tableBody.innerHTML = ''; // Clear existing rows
+            inventory.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.location}</td>
+                    <td>${item.status}</td>
+                    <td>${item.type}</td>
+                    <td>
+                        <button class="delete-button" onclick="deleteRow(this)">Eliminar</button>
+                        <button class="button" onclick="editRow(this)">Editar</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Función para guardar inventario y actualizar reasignaciones
+        function saveInventory() {
+            const rows = document.querySelectorAll('#inventory-table tbody tr');
+            const inventory = [];
+            const reasignaciones = [];
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const location = cells[0].textContent;
+                const status = cells[1].textContent;
+                const type = cells[2].textContent;
+
+                inventory.push({
+                    location: location,
+                    status: status,
+                    type: type
+                });
+
+                // Buscar si ya existe en reasignaciones, si no, agregar
+                const existingReasignacion = reasignaciones.find(r => r.ubicacion === location);
+                if (!existingReasignacion) {
+                    reasignaciones.push({
+                        ubicacion: location,
+                        estado: status,
+                        usuarioAsignado: "Sin asignar" // Valor predeterminado
+                    });
+                }
+            });
+
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            localStorage.setItem('reasignaciones', JSON.stringify(reasignaciones));
+        }
+
+        // Función para eliminar una fila
+        function deleteRow(button) {
+            const row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            saveInventory();  // Guardar cambios después de eliminar
+        }
+
+        // Función para editar una fila
+        function editRow(button) {
+            const row = button.parentNode.parentNode;
+            const cells = row.querySelectorAll('td');
+
+            cells.forEach((cell, index) => {
+                if (index < cells.length - 1) {
+                    const currentValue = cell.textContent;
+                    cell.innerHTML = `<input type="text" value="${currentValue}" />`;
+                }
+            });
+
+            button.textContent = 'Guardar';
+            button.onclick = function () {
+                saveRow(row, button);
+            };
+        }
+
+        // Función para guardar una fila editada
+        function saveRow(row, button) {
+            const inputs = row.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.parentElement.textContent = input.value;
+            });
+
+            button.textContent = 'Editar';
+            button.onclick = function () {
+                editRow(button);
+            };
+
+            saveInventory();  // Guardar cambios después de editar
+        }
+
+        // Función para agregar una nueva fila
+        function addRow() {
+            const table = document.getElementById('inventory-table').querySelector('tbody');
+            const newRow = document.createElement('tr');
+
+            newRow.innerHTML = `
+                <td><input type="text" placeholder="Ubicación" /></td>
+                <td><input type="text" placeholder="Estado" /></td>
+                <td><input type="text" placeholder="Tipo de Equipo" /></td>
+                <td>
+                    <button class="delete-button" onclick="deleteRow(this)">Eliminar</button>
+                    <button class="button" onclick="saveRow(this.parentNode.parentNode, this)">Guardar</button>
+                </td>
+            `;
+
+            table.appendChild(newRow);
+            saveInventory();  // Guardar cambios después de agregar
+        }
+
+        // Función para ir al menú
+        function goToMenu() {
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
